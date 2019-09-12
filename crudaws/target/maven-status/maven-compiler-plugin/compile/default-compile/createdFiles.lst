@@ -1,0 +1,10 @@
+com\dtalavera\ejerciciosoa\crudaws\services\ServiceRN.class
+com\dtalavera\ejerciciosoa\crudaws\services\ServiceEloqua.class
+com\dtalavera\ejerciciosoa\crudaws\CrudawsApplication.class
+com\dtalavera\ejerciciosoa\crudaws\services\ServiceAll.class
+com\dtalavera\ejerciciosoa\crudaws\entity\Contact.class
+com\dtalavera\ejerciciosoa\crudaws\config\Config.class
+com\dtalavera\ejerciciosoa\crudaws\controller\Endpoints.class
+com\dtalavera\ejerciciosoa\crudaws\services\ServiceOS.class
+com\dtalavera\ejerciciosoa\crudaws\services\ServiceRN$1.class
+com\dtalavera\ejerciciosoa\crudaws\services\ServiceOS$1.class
