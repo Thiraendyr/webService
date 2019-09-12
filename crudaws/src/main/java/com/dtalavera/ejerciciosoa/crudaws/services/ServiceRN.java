@@ -24,14 +24,13 @@ public class ServiceRN{
 
 //////////////////////////////////////Right Now
 	public Contact getContact(String email) {
-		return GetMethods.getRNContactByEmail(ReplaceChars.transformarCaracteresRarosDeUrl(email));
+		return GetMethods.getRNContactByEmail(ReplaceChars.transFormarLetras(email));
 	}
 	
 	public String deleteRNContact(String email) {
 		try {
-			System.out.println(email);
-			System.out.println(ReplaceChars.transformarCaracteresRarosDeUrl(email));
-			Contact contacto = GetMethods.getRNContactByEmail(ReplaceChars.transformarCaracteresRarosDeUrl(email));
+			System.out.println("deleteRNContact " + email);
+			Contact contacto = GetMethods.getRNContactByEmail(email);
 			if(contacto.getId() == 0L)
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
 			
@@ -76,10 +75,10 @@ public class ServiceRN{
 			
 			ContactRN contactRn = new ContactRN();
 			contactRn.setId(null);
-			contactRn.setName(new Name(ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("firstName")),ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("lastName"))));
-			contactRn.setEmails(new Emails(ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("emailAddress")), new AddressType(0)));
+			contactRn.setName(new Name(ReplaceChars.transFormarLetras(jsonObject.getString("firstName")),ReplaceChars.transFormarLetras(jsonObject.getString("lastName"))));
+			contactRn.setEmails(new Emails(ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")), new AddressType(0)));
 				
-			String response = createRNContact(new ObjectMapper().writeValueAsString(contactRn),ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("emailAddress")));
+			String response = createRNContact(new ObjectMapper().writeValueAsString(contactRn),ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
 			
 			return response;
 		}catch(Exception e) {

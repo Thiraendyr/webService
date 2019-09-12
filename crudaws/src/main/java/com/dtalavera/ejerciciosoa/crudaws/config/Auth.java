@@ -9,8 +9,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
-import com.dtalavera.ejerciciosoa.crudaws.methods.ReplaceChars;
-
 public class Auth {
 
 	public static HttpPost setPostHeaders(String api, String json) throws UnsupportedEncodingException {
@@ -56,6 +54,7 @@ public class Auth {
 	}
 	
 	public static HttpGet setGetHeaders(String api, String email) {
+		System.out.println("setGetHeaders " + email);
 		HttpGet hg = null;
 		switch(api) {
 		case "rn":

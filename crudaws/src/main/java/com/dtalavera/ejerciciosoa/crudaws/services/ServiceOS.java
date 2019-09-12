@@ -1,5 +1,6 @@
 package com.dtalavera.ejerciciosoa.crudaws.services;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -10,6 +11,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import com.dtalavera.ejerciciosoa.crudaws.config.Auth;
 import com.dtalavera.ejerciciosoa.crudaws.entity.Contact;
 import com.dtalavera.ejerciciosoa.crudaws.methods.GetMethods;
+import com.dtalavera.ejerciciosoa.crudaws.methods.ReplaceChars;
 import com.dtalavera.ejerciciosoa.crudaws.models.OSC.ContactOSC;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,7 +24,7 @@ public class ServiceOS{
 
 //////////////////////////////////////Oracle Sales Cloud
 	public Contact getContact(String email) {
-		return GetMethods.getOSContactByEmail(email);
+		return GetMethods.getOSContactByEmail(ReplaceChars.transFormarLetras(email));
 	}
 	
 	public String deleteOSContact(String email) {
@@ -43,16 +45,20 @@ public class ServiceOS{
 		}catch(Exception e) {e.printStackTrace();return "ERROR: No se ha podido eliminar";}
 	}
 	
-	public String createOSContact(String json, ContactOSC contactoOS) {
+	public String createOSContact(String json, String email) {
 		try {
-			Contact contacto = GetMethods.getOSContactByEmail(contactoOS.getEmailAddress());
+			Contact contacto = GetMethods.getOSContactByEmail(email);
 			if(contacto.getId() != 0L)
 				return "Ese contacto ya existe";
 			
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostHeaders("os", json);
 			
-		    client.execute(httpPost);
+			HttpResponse response = client.execute(httpPost);
+			if(response.getStatusLine().getStatusCode() != 201) {
+				System.out.println(httpPost.getEntity().getContent());
+				return "ERROR: El email contiene caracteres raros";
+			}
 		    
 		    client.close();
 		    
@@ -69,11 +75,11 @@ public class ServiceOS{
 			
 			ContactOSC contactOs = new ContactOSC();
 			contactOs.setPartyNumber(null);
-			contactOs.setFirstName(jsonObject.getString("firstName"));
-			contactOs.setLastName(jsonObject.getString("lastName"));
-			contactOs.setEmailAddress(jsonObject.getString("emailAddress"));
+			contactOs.setFirstName(ReplaceChars.transFormarLetras(jsonObject.getString("firstName")));
+			contactOs.setLastName(ReplaceChars.transFormarLetras(jsonObject.getString("lastName")));
+			contactOs.setEmailAddress(ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
 				
-			return createOSContact(new ObjectMapper().writeValueAsString(contactOs), contactOs);
+			return createOSContact(new ObjectMapper().writeValueAsString(contactOs), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
 		}catch(Exception e) {
 			e.printStackTrace();
 			return "ERROR: No se ha podido crear";

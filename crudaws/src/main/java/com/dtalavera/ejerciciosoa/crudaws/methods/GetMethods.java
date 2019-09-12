@@ -33,9 +33,10 @@ public class GetMethods {
 	public static Contact getRNContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
-			System.out.println(email);
+			System.out.println("getRNContactByEmail " + email);
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("rn", email);
+	        HttpGet request = Auth.setGetHeaders("rn", ReplaceChars.transFormarLetras(email));
+	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
@@ -66,7 +67,7 @@ public class GetMethods {
 		Contact contacto = new Contact();
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("os", email);
+	        HttpGet request = Auth.setGetHeaders("os", ReplaceChars.transFormarLetras(email));
 	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
@@ -98,7 +99,7 @@ public class GetMethods {
 		Contact contacto = new Contact();
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("el", email);
+	        HttpGet request = Auth.setGetHeaders("el", ReplaceChars.transFormarLetras(email));
 
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();

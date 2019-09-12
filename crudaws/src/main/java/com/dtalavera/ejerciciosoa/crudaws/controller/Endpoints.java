@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dtalavera.ejerciciosoa.crudaws.entity.Contact;
-import com.dtalavera.ejerciciosoa.crudaws.methods.ReplaceChars;
 import com.dtalavera.ejerciciosoa.crudaws.services.*;
 
 @RestController
@@ -48,8 +47,6 @@ public class Endpoints {
 	
 	@RequestMapping(value = "rn/contacts/{email}", method = RequestMethod.GET)
 	public ResponseEntity<Contact> getRNContact(@PathVariable("email") String email) {
-		System.out.println(email);
-		System.out.println(ReplaceChars.transformarCaracteresRarosDeUrl(email));
 		return new ResponseEntity<Contact>(serviceRN.getContact(email), HttpStatus.OK);
 	}
 	

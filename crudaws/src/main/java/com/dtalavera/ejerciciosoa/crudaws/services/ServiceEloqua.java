@@ -1,5 +1,6 @@
 package com.dtalavera.ejerciciosoa.crudaws.services;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,12 +24,11 @@ public class ServiceEloqua{
 
 //////////////////////////////////////Eloqua	
 	public Contact getContact(String email) {
-		return GetMethods.getElContactByEmail(email);
+		return GetMethods.getElContactByEmail(ReplaceChars.transFormarLetras(email));
 	}
 	
 	public String deleteElContact(String email) {
 		try {
-			email = ReplaceChars.JsonTransformerURI(email);
 			Contact contacto = GetMethods.getElContactByEmail(email);
 			if(contacto.getId() == 0L)
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
@@ -45,16 +45,20 @@ public class ServiceEloqua{
 		}catch(Exception e) {e.printStackTrace();return "ERROR: No se ha podido eliminar";}
 	}
 	
-	public String createElContact(String json, ContactEl contactoEl) {
+	public String createElContact(String json, String email) {
 		try {
-			Contact contacto = GetMethods.getElContactByEmail(contactoEl.getEmailAddress());
+			Contact contacto = GetMethods.getElContactByEmail(email);
 			if(contacto.getId() != 0L)
 				return "Ese contacto ya existe";
 			
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost = Auth.setPostHeaders("el", json);
 		    
-		    client.execute(httpPost);
+			HttpResponse response = client.execute(httpPost);
+			if(response.getStatusLine().getStatusCode() != 201) {
+				System.out.println(httpPost.getEntity().getContent());
+				return "ERROR: El email contiene caracteres raros";
+			}
 		    
 		    client.close();
 		    
@@ -64,16 +68,15 @@ public class ServiceEloqua{
 	
 	public String serializarObjecto(String jsonSend){
 		try {
-			String json = ReplaceChars.stripDiacritics(jsonSend);
-			JSONObject jsonObject = new JSONObject(json);
+			JSONObject jsonObject = new JSONObject(jsonSend);
 			
 			ContactEl contactEl = new ContactEl();
 			contactEl.setId(null);;
-			contactEl.setFirstName(jsonObject.getString("firstName"));
-			contactEl.setLastName(jsonObject.getString("lastName"));
-			contactEl.setEmailAddress(jsonObject.getString("emailAddress"));
+			contactEl.setFirstName(ReplaceChars.transFormarLetras(jsonObject.getString("firstName")));
+			contactEl.setLastName(ReplaceChars.transFormarLetras(jsonObject.getString("lastName")));
+			contactEl.setEmailAddress(ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
 				
-			return createElContact(new ObjectMapper().writeValueAsString(contactEl), contactEl);
+			return createElContact(new ObjectMapper().writeValueAsString(contactEl), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
 		}catch(Exception e) {
 			e.printStackTrace();
 			return "ERROR: No se ha podido crear";
