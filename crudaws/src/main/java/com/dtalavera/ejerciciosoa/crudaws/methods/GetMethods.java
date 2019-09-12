@@ -11,10 +11,11 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import com.dtalavera.ejerciciosoa.crudaws.config.Auth;
 import com.dtalavera.ejerciciosoa.crudaws.entity.Contact;
+import com.dtalavera.ejerciciosoa.crudaws.models.OSC.LeadOSC;
 
 public class GetMethods {
 	
-	public static Contact getRNContactByJson(String json, String email) {
+	private static Contact getRNContactByJson(String json, String email) {
 		Contact contacto = new Contact();
 		try {
 			JSONObject jsonObject = new JSONObject(json);
@@ -35,7 +36,7 @@ public class GetMethods {
 		try {
 			System.out.println("getRNContactByEmail " + email);
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("rn", ReplaceChars.transFormarLetras(email));
+	        HttpGet request = Auth.setGetContactHeaders("rn", ReplaceChars.transFormarLetras(email));
 	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
@@ -47,19 +48,16 @@ public class GetMethods {
         return contacto;
 	}
 	
-	public static Contact getOSContactByJson(String json) {
+	private static Contact getOSContactByJson(String json) {
 		Contact contacto = new Contact();
-		if(!(json.equals(""))) {
-			try {
-				JSONObject jsonObject = new JSONObject(json);
-			    JSONArray jsonArray = jsonObject.getJSONArray("items");
-			    contacto = setContact(contacto, jsonArray.getJSONObject(0).getString("PartyNumber"), jsonArray.getJSONObject(0).getString("FirstName"), jsonArray.getJSONObject(0).getString("LastName"), jsonArray.getJSONObject(0).getString("EmailAddress"));
-			    
-			}catch(Exception e) {
-				e.printStackTrace();
+		try {
+			JSONObject jsonObject = new JSONObject(json);
+		    JSONArray jsonArray = jsonObject.getJSONArray("items");
+			if(!(jsonArray.equals(""))) {
+				contacto = setContact(contacto, jsonArray.getJSONObject(0).getString("PartyNumber"), jsonArray.getJSONObject(0).getString("FirstName"), jsonArray.getJSONObject(0).getString("LastName"), jsonArray.getJSONObject(0).getString("EmailAddress"));
 			}
+		}catch(Exception e) {
 		}
-		
 		return contacto;
 	}
 	
@@ -67,15 +65,15 @@ public class GetMethods {
 		Contact contacto = new Contact();
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("os", ReplaceChars.transFormarLetras(email));
+	        HttpGet request = Auth.setGetContactHeaders("os", ReplaceChars.transFormarLetras(email));
 	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
 	        contacto = GetMethods.getOSContactByJson(json);
 		} catch(Exception e) {
-        	e.printStackTrace();
         }
+		
         return contacto;
 	}
 	
@@ -99,7 +97,7 @@ public class GetMethods {
 		Contact contacto = new Contact();
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("el", ReplaceChars.transFormarLetras(email));
+	        HttpGet request = Auth.setGetContactHeaders("el", ReplaceChars.transFormarLetras(email));
 
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
@@ -117,5 +115,39 @@ public class GetMethods {
 	    contacto.setLastName(lastName);
 	    contacto.setEmail(emailAddress);
 	    return contacto;
+	}
+
+	private static LeadOSC setLead(LeadOSC lead, String id, String name) {
+		lead.setContactPartyNumber(Integer.parseInt(id));
+		lead.setName(name);
+		return lead;
+	}
+	
+	private static LeadOSC getOSLeadByJson(String json) {
+		LeadOSC lead = new LeadOSC();
+		try {
+			JSONObject jsonObject = new JSONObject(json);
+		    JSONArray jsonArray = jsonObject.getJSONArray("items");
+			if(!(jsonArray.equals(""))) {
+				lead = setLead(lead, jsonArray.getJSONObject(0).getString("LeadId"), jsonArray.getJSONObject(0).getString("PrimaryContactPartyName"));
+			}
+		}catch(Exception e) {
+		}
+		return lead;
+	}
+	
+	public static LeadOSC getOSLeadByPrimaryContactEmailAddress(String email) {
+		LeadOSC lead = new LeadOSC();
+		try {
+			HttpClient client = HttpClientBuilder.create().build();
+	        HttpGet request = Auth.setGetContactHeaders("osLead", email);
+	        
+	        HttpResponse response = client.execute(request);
+	        HttpEntity entity = response.getEntity();
+	        String json = EntityUtils.toString(entity);
+	        lead = GetMethods.getOSLeadByJson(json);
+		} catch(Exception e) {
+        }
+        return lead;
 	}
 }

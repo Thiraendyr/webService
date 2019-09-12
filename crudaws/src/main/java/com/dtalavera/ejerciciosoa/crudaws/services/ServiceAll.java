@@ -22,7 +22,7 @@ public class ServiceAll{
 
 		String respuestaEl = sel.serializarObjecto(json);
 		String respuestaRN = srn.serializarObjecto(json);
-		String respuestaOS = sos.serializarObjecto(json);
+		String respuestaOS = sos.serializarObjectoContact(json);
 		
 		return "Right Now: \n\t" + respuestaRN + "\nEloqua: \n\t" + respuestaEl + "\nOracle Sales Cloud: \n\t" + respuestaOS;
 	}

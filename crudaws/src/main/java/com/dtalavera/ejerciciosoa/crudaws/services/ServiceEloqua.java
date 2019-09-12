@@ -34,7 +34,7 @@ public class ServiceEloqua{
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
 			
 			CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-			HttpDelete httpDelete  = Auth.setDeleteHeaders("el", String.valueOf(contacto.getId()));
+			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("el", String.valueOf(contacto.getId()));
 			
 			httpclient.execute(httpDelete);
 			
@@ -52,11 +52,10 @@ public class ServiceEloqua{
 				return "Ese contacto ya existe";
 			
 			CloseableHttpClient client = HttpClients.createDefault();
-			HttpPost httpPost = Auth.setPostHeaders("el", json);
+			HttpPost httpPost = Auth.setPostContactHeaders("el", json);
 		    
 			HttpResponse response = client.execute(httpPost);
 			if(response.getStatusLine().getStatusCode() != 201) {
-				System.out.println(httpPost.getEntity().getContent());
 				return "ERROR: El email contiene caracteres raros";
 			}
 		    

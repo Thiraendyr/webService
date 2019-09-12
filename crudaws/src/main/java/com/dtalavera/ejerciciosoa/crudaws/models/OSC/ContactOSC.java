@@ -1,17 +1,23 @@
 package com.dtalavera.ejerciciosoa.crudaws.models.OSC;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+	"PartyId",
     "PartyNumber",
     "FirstName",
     "LastName",
     "EmailAddress"
 })
 public class ContactOSC {
+	@JsonProperty("PartyId")
+	@JsonIgnore
+	private long PartyId;
+	
 	@JsonProperty("PartyNumber")
 	private Object PartyNumber;
 	
@@ -28,14 +34,26 @@ public class ContactOSC {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ContactOSC(Object PartyNumber, String firstName, String lastName, String emailAddress) {
+	public ContactOSC(long partyId, Object partyNumber, String firstName, String lastName, String emailAddress) {
 		super();
-		this.PartyNumber = PartyNumber;
-		this.FirstName = firstName;
-		this.LastName = lastName;
-		this.EmailAddress = emailAddress;
+		PartyId = partyId;
+		PartyNumber = partyNumber;
+		FirstName = firstName;
+		LastName = lastName;
+		EmailAddress = emailAddress;
 	}
 	
+	@JsonProperty("PartyId")
+	@JsonIgnore
+	public long getPartyId() {
+		return PartyId;
+	}
+
+	@JsonProperty("PartyId")
+	public void setPartyId(long partyId) {
+		PartyId = partyId;
+	}
+
 	@JsonProperty("PartyNumber")
 	public Object getPartyNumber() {
 		return PartyNumber;

@@ -6,7 +6,7 @@ public class Contact {
 	private String firstName;
 	private String lastName;
 	private String email;
-	
+
 	public long getId() {
 		return id;
 	}
@@ -43,6 +43,7 @@ public class Contact {
 	public String toString() {
 		return "Contact [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + "]";
 	}
-
+	
+	
 	
 }

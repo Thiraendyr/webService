@@ -11,7 +11,7 @@ import org.apache.http.entity.StringEntity;
 
 public class Auth {
 
-	public static HttpPost setPostHeaders(String api, String json) throws UnsupportedEncodingException {
+	public static HttpPost setPostContactHeaders(String api, String json) throws UnsupportedEncodingException {
 		HttpPost hp = null;
 		switch(api) {
 		case "rn":
@@ -27,6 +27,10 @@ public class Auth {
 			hp = new HttpPost(Config.getUrlOS() + "/crmRestApi/resources/latest/contacts");
 			hp.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrOS() + ":" + Config.getPwdOS()).getBytes())));
 			break;
+		case "osLead":
+			hp = new HttpPost(Config.getUrlOS() + "/crmRestApi/resources/latest/leads");
+			hp.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrOS() + ":" + Config.getPwdOS()).getBytes())));
+			break;
 		}
 		hp.setEntity(new StringEntity(json));
 		hp.setHeader("Accept", "application/json");
@@ -34,7 +38,7 @@ public class Auth {
 	    return hp;
 	}
 	
-	public static HttpDelete setDeleteHeaders(String api, String id) {
+	public static HttpDelete setDeleteContactHeaders(String api, String id) {
 		HttpDelete hd = null;
 		switch(api) {
 		case "rn":
@@ -49,12 +53,15 @@ public class Auth {
 			hd = new HttpDelete(Config.getUrlOS() + "/crmRestApi/resources/latest/contacts/" + id);
 			hd.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrOS() + ":" + Config.getPwdOS()).getBytes())));
 			break;
+		case "osLead":
+			hd = new HttpDelete(Config.getUrlOS() + "/crmRestApi/resources/latest/leads/" + id);
+			hd.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrOS() + ":" + Config.getPwdOS()).getBytes())));
+			break;
 		}
 	    return hd;
 	}
 	
-	public static HttpGet setGetHeaders(String api, String email) {
-		System.out.println("setGetHeaders " + email);
+	public static HttpGet setGetContactHeaders(String api, String email) {
 		HttpGet hg = null;
 		switch(api) {
 		case "rn":
@@ -67,6 +74,10 @@ public class Auth {
 			break;
 		case "os":
 			hg = new HttpGet(Config.getUrlOS() + "/crmRestApi/resources/latest/contacts?q=EmailAddress=" + email);
+			hg.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrOS() + ":" + Config.getPwdOS()).getBytes())));
+			break;
+		case "osLead":
+			hg = new HttpGet(Config.getUrlOS() + "/crmRestApi/resources/latest/leads?q=PrimaryContactEmailAddress=" + email);
 			hg.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrOS() + ":" + Config.getPwdOS()).getBytes())));
 			break;
 		}

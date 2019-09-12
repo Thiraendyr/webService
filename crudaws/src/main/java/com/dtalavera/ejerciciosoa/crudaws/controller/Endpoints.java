@@ -84,6 +84,6 @@ public class Endpoints {
 	
 	@RequestMapping(value = "os/contacts", method = RequestMethod.POST)
 	public ResponseEntity<String> createOSContact(@RequestBody String c) {
-		return new ResponseEntity<String>(serviceOS.serializarObjecto(c), HttpStatus.OK);
+		return new ResponseEntity<String>(serviceOS.serializarObjectoContact(c), HttpStatus.OK);
 	}
 }
