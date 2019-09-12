@@ -6,15 +6,15 @@ import java.util.Map;
 public class ReplaceChars {
 
 	//Método para sustituir caracteres especiales de un json y mandarlo a la uri
-	public static String transformarLetrasRaras(String palabro) {
-		palabro = palabro.replace("ñ", "n").replace("Ñ", "N").replace("Á", "A").replace("á", "a").replace("É", "E").replace("é", "e").replace("Í", "I").replace("í", "i").replace("Ó", "O").replace("ó", "o").replace("Ú", "U").replace("ú", "u").replace("Ü", "U").replace("ü", "u");
-        return palabro;
+	public static String transformarCaracteresRarosDeUrl (String jsonSend) {
+        jsonSend = jsonSend.replace("ñ", "%C3%B1").replace("Ñ", "%C3%91").replace("Á", "%C1").replace("á", "%C3%A1").replace("É", "%C3%89").replace("é", "%C3%A9").replace("Í", "%C3%8D").replace("í", "%C3%AD").replace("Ó", "%C3%93").replace("ó", "%C3%B3").replace("Ú", "%C3%9A").replace("ú", "%C3%BA").replace("Ü", "%C3%9C").replace("ü", "%C3%BC").replace("&", "%26").replace(" ", "%20").replace("-", "%2D");
+        return jsonSend;
     }
 
     private static Map<Character, String> MAP_NORM;
 
     //Método para sustituir caracteres especiales de un json recibido o un json para enviar (unicode)
-    public static String stripDiacritics(String value) {
+    public static String transformarCaracteresRarosDeJson (String value) {
         if (MAP_NORM == null || MAP_NORM.isEmpty()) {
             MAP_NORM = new HashMap<>();
             MAP_NORM.put('!', "\\u0021");

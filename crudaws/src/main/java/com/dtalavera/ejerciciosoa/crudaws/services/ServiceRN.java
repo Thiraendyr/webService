@@ -1,11 +1,11 @@
 package com.dtalavera.ejerciciosoa.crudaws.services;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import com.dtalavera.ejerciciosoa.crudaws.config.Auth;
@@ -24,13 +24,14 @@ public class ServiceRN{
 
 //////////////////////////////////////Right Now
 	public Contact getContact(String email) {
-		return GetMethods.getRNContactByEmail(email);
+		return GetMethods.getRNContactByEmail(ReplaceChars.transformarCaracteresRarosDeUrl(email));
 	}
 	
 	public String deleteRNContact(String email) {
 		try {
-			//email = ReplaceChars.stripDiacritics(email);
-			Contact contacto = GetMethods.getRNContactByEmail(email);
+			System.out.println(email);
+			System.out.println(ReplaceChars.transformarCaracteresRarosDeUrl(email));
+			Contact contacto = GetMethods.getRNContactByEmail(ReplaceChars.transformarCaracteresRarosDeUrl(email));
 			if(contacto.getId() == 0L)
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
 			
@@ -55,12 +56,18 @@ public class ServiceRN{
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostHeaders("rn", json);
 		    
-		    //client.execute(httpPost);
-		    System.out.println(EntityUtils.toString(client.execute(httpPost).getEntity()));
+			HttpResponse response = client.execute(httpPost);
+			if(response.getStatusLine().getStatusCode() != 201) {
+				System.out.println(httpPost.getEntity().getContent());
+				return "ERROR: El email contiene caracteres raros";
+			}
 		    client.close();
 		    
 		    return "Creado con éxito";
-		}catch(Exception e) {e.printStackTrace();return "ERROR: No se ha podido crear";}
+		}catch(Exception e) {
+			e.printStackTrace();
+			return "ERROR: No se ha podido crear";
+		}
 	}
 	
 	public String serializarObjecto(String jsonSend){
@@ -69,12 +76,12 @@ public class ServiceRN{
 			
 			ContactRN contactRn = new ContactRN();
 			contactRn.setId(null);
-			contactRn.setName(new Name(jsonObject.getString("firstName"),jsonObject.getString("lastName")));
-			contactRn.setEmails(new Emails(ReplaceChars.JsonTransformerURI(jsonObject.getString("emailAddress")), new AddressType(0)));
-			
-			System.out.println(contactRn.toString());
+			contactRn.setName(new Name(ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("firstName")),ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("lastName"))));
+			contactRn.setEmails(new Emails(ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("emailAddress")), new AddressType(0)));
 				
-			return createRNContact(new ObjectMapper().writeValueAsString(contactRn),jsonObject.getString("emailAddress"));
+			String response = createRNContact(new ObjectMapper().writeValueAsString(contactRn),ReplaceChars.transformarCaracteresRarosDeUrl(jsonObject.getString("emailAddress")));
+			
+			return response;
 		}catch(Exception e) {
 			e.printStackTrace();
 			return "ERROR: No se ha podido crear";

@@ -33,12 +33,13 @@ public class GetMethods {
 	public static Contact getRNContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
+			System.out.println(email);
 			HttpClient client = HttpClientBuilder.create().build();
-	        HttpGet request = Auth.setGetHeaders("rn", ReplaceChars.JsonTransformerURI(email));
+	        HttpGet request = Auth.setGetHeaders("rn", email);
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
-	        contacto = GetMethods.getRNContactByJson(json, ReplaceChars.stripDiacritics(email));
+	        contacto = GetMethods.getRNContactByJson(json, email);
 		} catch(Exception e) {
         	e.printStackTrace();
         }
