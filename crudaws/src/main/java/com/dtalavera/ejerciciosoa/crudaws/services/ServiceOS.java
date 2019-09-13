@@ -114,7 +114,7 @@ public class ServiceOS{
 			if(createOSContact(new ObjectMapper().writeValueAsString(contactOs), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")))) {
 				Contact c = GetMethods.getOSContactByEmail(contactOs.getEmailAddress());
 				serializarObjectoLead(c);
-				return "Creado con éxito";
+				return "Creado con éxito con su lead: " + contactOs.getFirstName() + contactOs.getLastName() + "_Lead";
 			}
 			else {
 				return "No se admiten correos repetidos";
