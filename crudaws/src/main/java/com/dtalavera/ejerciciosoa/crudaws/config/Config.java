@@ -2,6 +2,7 @@ package com.dtalavera.ejerciciosoa.crudaws.config;
 
 import java.util.ResourceBundle;
 
+//Clase que contiene las urls y autentificaciones almacenadas en el properties
 public class Config {
 	private static final ResourceBundle PROPERTIES = ResourceBundle.getBundle("application");
     

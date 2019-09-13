@@ -11,6 +11,7 @@ import org.apache.http.entity.StringEntity;
 
 public class Auth {
 
+	//Devuelve un HttpPost con la autorización y la url necesaria para crear en una de las 3 apis
 	public static HttpPost setPostContactHeaders(String api, String json) throws UnsupportedEncodingException {
 		HttpPost hp = null;
 		switch(api) {
@@ -37,6 +38,7 @@ public class Auth {
 	    return hp;
 	}
 	
+	//Devuelve un HttpDelete con la autorización y la url necesaria para eliminar desde una de las 3 apis
 	public static HttpDelete setDeleteContactHeaders(String api, long id) {
 		HttpDelete hd = null;
 		switch(api) {
@@ -60,6 +62,7 @@ public class Auth {
 	    return hd;
 	}
 	
+	//Devuelve un HttpGet con la autorización y la url necesaria para obtener por email desde una de las 3 apis
 	public static HttpGet setGetContactHeaders(String api, String email) {
 		HttpGet hg = null;
 		switch(api) {

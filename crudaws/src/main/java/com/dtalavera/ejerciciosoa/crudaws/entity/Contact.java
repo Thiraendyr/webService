@@ -1,5 +1,6 @@
 package com.dtalavera.ejerciciosoa.crudaws.entity;
 
+//Clase genérica que sirve para almacenar internamente los contactos de las tres apis
 public class Contact {
 
 	private long id;

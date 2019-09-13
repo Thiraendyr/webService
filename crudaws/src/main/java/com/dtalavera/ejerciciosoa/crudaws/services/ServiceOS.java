@@ -23,10 +23,12 @@ public class ServiceOS{
 	}
 
 //////////////////////////////////////Oracle Sales Cloud
+	//Busca un Contact por email
 	public Contact getContact(String email) {
 		return GetMethods.getOSContactByEmail(ReplaceChars.transFormarLetras(email));
 	}
 	
+	//Elimina un Contact por email
 	public String deleteOSContact(String email) {
 		try {
 			Contact contacto = GetMethods.getOSContactByEmail(email);
@@ -49,6 +51,7 @@ public class ServiceOS{
 		}
 	}
 	
+	//Elimina un lead asociado al Email de un contacto
 	private static boolean deleteOSLeadsByEmail(String email) {
 		try {
 			LeadOSC lead = GetMethods.getOSLeadByPrimaryContactEmailAddress(email);
@@ -67,11 +70,12 @@ public class ServiceOS{
 		}
 	}
 	
-	private boolean createOSContact(String json, String email) {
+	//Hace post del contacto desde el ContactOSC recibido por json
+	private String createOSContact(String json, String email) {
 		try {
 			Contact contacto = GetMethods.getOSContactByEmail(email);
 			if(contacto.getId() != 0L)
-				return false;
+				return "Ya existe un contacto con ese email...";
 			
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostContactHeaders("os", json);
@@ -80,14 +84,19 @@ public class ServiceOS{
 			
 		    client.close();
 		    
-		    return true;
+		    return "Se ha creado con éxito el nuevo contacto";
 		}catch(Exception e) {
-			return false;
+			return "ERROR: No se ha podido crear el contacto";
 		}
 	}
 	
-	private boolean createOSLead(String json) {
+	//Realiza un post desde el json del LeadOSC
+	private String createOSLead(String json, String email) {
 		try {
+			LeadOSC lead = GetMethods.getOSLeadByPrimaryContactEmailAddress(email);
+			if(lead.getContactPartyNumber() != 0L)
+				return " ya existe un lead asociado a ese email...";
+			
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostContactHeaders("osLead", json);
 			
@@ -95,12 +104,13 @@ public class ServiceOS{
 		    
 		    client.close();
 		    
-		    return true;
+		    return " se ha creado un lead asociado a ese contacto";
 		}catch(Exception e) {
-			return false;
+			return "ERROR: no se ha podido crear el lead";
 		}
 	}
 	
+	//Serializa un json a ContactOSC y crea el contacto
 	public String serializarObjectoContact(String jsonSend){
 		try {
 			JSONObject jsonObject = new JSONObject(jsonSend);
@@ -110,32 +120,34 @@ public class ServiceOS{
 			contactOs.setFirstName(ReplaceChars.transFormarLetras(jsonObject.getString("firstName")));
 			contactOs.setLastName(ReplaceChars.transFormarLetras(jsonObject.getString("lastName")));
 			contactOs.setEmailAddress(ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
-				
-			if(createOSContact(new ObjectMapper().writeValueAsString(contactOs), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")))) {
-				Contact c = GetMethods.getOSContactByEmail(contactOs.getEmailAddress());
-				serializarObjectoLead(c);
-				return "Creado con éxito con su lead: " + contactOs.getFirstName() + contactOs.getLastName() + "_Lead";
-			}
-			else {
-				return "No se admiten correos repetidos";
-			}
+			
+			String responseContacto = createOSContact(new ObjectMapper().writeValueAsString(contactOs), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
+			
+			Contact c = GetMethods.getOSContactByEmail(contactOs.getEmailAddress());
+			String responseLead = serializarObjectoLead(c, c.getEmail());
+			
+			return responseContacto + responseLead;
+		
+			//return "No se admiten correos repetidos";
+			
 			
 		}catch(Exception e) {
 			return "ERROR: No se ha podido crear";
 		}
 	}
 	
-	public boolean serializarObjectoLead(Contact contact){
+	//Serializa un json a LeadOSC y crea el Lead
+	public String serializarObjectoLead(Contact contact, String email){
 		try {
 			LeadOSC leadOS = new LeadOSC();
 			leadOS.setName(contact.getFirstName() + contact.getLastName() + "_Lead");
 			leadOS.setContactPartyNumber(contact.getId());
 			
-			boolean response = createOSLead(new ObjectMapper().writeValueAsString(leadOS));
+			String response = createOSLead(new ObjectMapper().writeValueAsString(leadOS), email);
 			
 			return response;
 		}catch(Exception e) {
-			return false;
+			return "ERROR: No se ha podido crear el lead";
 		}
 	}
 

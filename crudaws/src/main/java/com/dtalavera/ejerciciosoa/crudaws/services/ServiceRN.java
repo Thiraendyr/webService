@@ -23,10 +23,13 @@ public class ServiceRN{
 	}
 
 //////////////////////////////////////Right Now
+	
+	//Devuelve un Contact recibiendo un email
 	public Contact getContact(String email) {
 		return GetMethods.getRNContactByEmail(ReplaceChars.transFormarLetras(email));
 	}
 	
+	//Elimina un Contact recibiendo su email
 	public String deleteRNContact(String email) {
 		try {
 			Contact contacto = GetMethods.getRNContactByEmail(email);
@@ -47,6 +50,7 @@ public class ServiceRN{
 		}
 	}
 	
+	//Crea un contacto recibiendo un json de su ContactRN y su email
 	public String createRNContact(String json, String email) {
 		try {
 			Contact contacto = GetMethods.getRNContactByEmail(email);
@@ -68,6 +72,7 @@ public class ServiceRN{
 		}
 	}
 	
+	//Serializa un contacto recibido por json a un ContactRN
 	public String serializarObjecto(String jsonSend){
 		try {
 			JSONObject jsonObject = new JSONObject(jsonSend);

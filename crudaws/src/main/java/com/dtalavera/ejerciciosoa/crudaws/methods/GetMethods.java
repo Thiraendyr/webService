@@ -15,6 +15,7 @@ import com.dtalavera.ejerciciosoa.crudaws.models.OSC.LeadOSC;
 
 public class GetMethods {
 	
+	//Devuelve un Contact de Right Now recibiendo un json y un email
 	private static Contact getRNContactByJson(String json, String email) {
 		Contact contacto = new Contact();
 		try {
@@ -30,6 +31,7 @@ public class GetMethods {
 		return contacto;
 	}
 	
+	//Devuelve un Contact de Right Now recibiendo un email
 	public static Contact getRNContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
@@ -48,6 +50,7 @@ public class GetMethods {
         return contacto;
 	}
 	
+	//Devuelve un Contact de Oracle Sales Cloud recibiendo un json
 	private static Contact getOSContactByJson(String json) {
 		Contact contacto = new Contact();
 		try {
@@ -61,6 +64,7 @@ public class GetMethods {
 		return contacto;
 	}
 	
+	//Devuelve un Contact de Oracle Sales Cloud recibiendo un email
 	public static Contact getOSContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
@@ -80,6 +84,7 @@ public class GetMethods {
         return contacto;
 	}
 	
+	//Devuelve un Contact de Eloqua recibiendo un json
 	private static Contact getElContactByJson(String json) {
 		Contact contacto = new Contact();
 		if(!(json.equals(""))) {
@@ -95,6 +100,7 @@ public class GetMethods {
 		return contacto;
 	}
 	
+	//Devuelve un Contact de Eloqua recibiendo un email
 	public static Contact getElContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
@@ -113,6 +119,7 @@ public class GetMethods {
         return contacto;
 	}
 
+	//Setea un Contact por parámetros
 	private static Contact setContact(Contact contacto, String id, String firstName, String lastName, String emailAddress) {
 		contacto.setId(Long.parseLong(id));
 	    contacto.setFirstName(firstName);
@@ -121,12 +128,14 @@ public class GetMethods {
 	    return contacto;
 	}
 
+	//Setea un LeadOSC por parámetros
 	private static LeadOSC setLead(LeadOSC lead, long id, String name) {
 		lead.setContactPartyNumber(id);
 		lead.setName(name);
 		return lead;
 	}
 	
+	//Devuelve un LeadOSC recibiendo un json
 	private static LeadOSC getOSLeadByJson(String json) {
 		LeadOSC lead = new LeadOSC();
 		try {
@@ -140,6 +149,7 @@ public class GetMethods {
 		return lead;
 	}
 	
+	//Devuelve un LeadOSC recibiendo un email
 	public static LeadOSC getOSLeadByPrimaryContactEmailAddress(String email) {
 		LeadOSC lead = new LeadOSC();
 		try {

@@ -23,10 +23,13 @@ public class ServiceEloqua{
 	}
 
 //////////////////////////////////////Eloqua	
+	
+	//Devuelve el Contact recibiendo el email
 	public Contact getContact(String email) {
 		return GetMethods.getElContactByEmail(ReplaceChars.transFormarLetras(email));
 	}
 	
+	//Elimina un Contact recibiendo un email
 	public String deleteElContact(String email) {
 		try {
 			Contact contacto = GetMethods.getElContactByEmail(email);
@@ -47,6 +50,7 @@ public class ServiceEloqua{
 		}
 	}
 	
+	//Crea un Contact recibiendo el json de ContactEl serializado y su email
 	public String createElContact(String json, String email) {
 		try {
 			Contact contacto = GetMethods.getElContactByEmail(email);
@@ -68,6 +72,7 @@ public class ServiceEloqua{
 			return "ERROR: No se ha podido crear";}
 	}
 	
+	//Serializa un contacto recibido por post a un ContactEl
 	public String serializarObjecto(String jsonSend){
 		try {
 			JSONObject jsonObject = new JSONObject(jsonSend);
