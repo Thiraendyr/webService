@@ -34,7 +34,7 @@ public class ServiceEloqua{
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
 			
 			CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("el", String.valueOf(contacto.getId()));
+			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("el", contacto.getId());
 			
 			httpclient.execute(httpDelete);
 			

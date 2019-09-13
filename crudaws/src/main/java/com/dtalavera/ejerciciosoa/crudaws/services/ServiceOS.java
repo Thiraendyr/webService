@@ -1,10 +1,15 @@
 package com.dtalavera.ejerciciosoa.crudaws.services;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import com.dtalavera.ejerciciosoa.crudaws.config.Auth;
@@ -34,11 +39,11 @@ public class ServiceOS{
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
 			
 			CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("os", String.valueOf(contacto.getId()));
+			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("os", contacto.getId());
 			
 			httpclient.execute(httpDelete);
 			
-			deleteOSLead(contacto.getEmail());
+			deleteOSLeadsByEmail(contacto.getId());
 
 			httpclient.close();
 			
@@ -49,18 +54,16 @@ public class ServiceOS{
 		}
 	}
 	
-	private static boolean deleteOSLead(String email) {
+	private static boolean deleteOSLeadsByEmail(long id) {
 		try {
-			LeadOSC lead = GetMethods.getOSLeadByPrimaryContactEmailAddress(email);
-			if((long) lead.getContactPartyNumber() == 0)
-				return false;
-			
-			CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("osLead", String.valueOf(lead.getContactPartyNumber()));
-			
-			httpclient.execute(httpDelete);
-
-			httpclient.close();
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpDelete request;
+			HttpResponse response;
+			do {
+		        request = Auth.setDeleteContactHeaders("osLead", id);
+		        response = client.execute(request);
+		        
+			}while(response.getStatusLine().getStatusCode() != 404 || response.getStatusLine().getStatusCode() != 400);
 			
 			return true;
 			
@@ -78,7 +81,7 @@ public class ServiceOS{
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostContactHeaders("os", json);
 			
-			System.out.println("Contacto: " + client.execute(httpPost));
+			client.execute(httpPost);
 			
 		    client.close();
 		    
@@ -93,7 +96,7 @@ public class ServiceOS{
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostContactHeaders("osLead", json);
 			
-			System.out.println("Lead: " + client.execute(httpPost));
+			client.execute(httpPost);
 		    
 		    client.close();
 		    
@@ -134,8 +137,6 @@ public class ServiceOS{
 			leadOS.setContactPartyNumber(contact.getId());
 			
 			boolean response = createOSLead(new ObjectMapper().writeValueAsString(leadOS));
-			
-			System.out.println(new ObjectMapper().writeValueAsString(leadOS));
 			
 			return response;
 		}catch(Exception e) {

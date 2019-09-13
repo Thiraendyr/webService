@@ -35,7 +35,7 @@ public class ServiceRN{
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
 			
 			CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-			HttpDelete httpDelete = Auth.setDeleteContactHeaders("rn", String.valueOf(contacto.getId()));
+			HttpDelete httpDelete = Auth.setDeleteContactHeaders("rn", contacto.getId());
 			
 			httpclient.execute(httpDelete);
 			

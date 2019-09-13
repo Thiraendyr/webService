@@ -38,7 +38,7 @@ public class Auth {
 	    return hp;
 	}
 	
-	public static HttpDelete setDeleteContactHeaders(String api, String id) {
+	public static HttpDelete setDeleteContactHeaders(String api, long id) {
 		HttpDelete hd = null;
 		switch(api) {
 		case "rn":
