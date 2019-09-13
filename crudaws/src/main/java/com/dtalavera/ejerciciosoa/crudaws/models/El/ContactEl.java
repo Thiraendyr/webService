@@ -1,8 +1,6 @@
 package com.dtalavera.ejerciciosoa.crudaws.models.El;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ContactEl {
@@ -20,10 +18,10 @@ public class ContactEl {
 	
 	public ContactEl(Object id, String firstName, String lastName, String emailAddress) {
 		super();
-		id = id;
-		firstName = firstName;
-		lastName = lastName;
-		emailAddress = emailAddress;
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.emailAddress = emailAddress;
 	}
 
 	public Object getId() {

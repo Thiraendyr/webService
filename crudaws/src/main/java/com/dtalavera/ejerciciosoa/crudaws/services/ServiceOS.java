@@ -1,15 +1,10 @@
 package com.dtalavera.ejerciciosoa.crudaws.services;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import com.dtalavera.ejerciciosoa.crudaws.config.Auth;
@@ -43,7 +38,7 @@ public class ServiceOS{
 			
 			httpclient.execute(httpDelete);
 			
-			deleteOSLeadsByEmail(contacto.getId());
+			deleteOSLeadsByEmail(email);
 
 			httpclient.close();
 			
@@ -54,16 +49,16 @@ public class ServiceOS{
 		}
 	}
 	
-	private static boolean deleteOSLeadsByEmail(long id) {
+	private static boolean deleteOSLeadsByEmail(String email) {
 		try {
-			HttpClient client = HttpClientBuilder.create().build();
-			HttpDelete request;
-			HttpResponse response;
-			do {
-		        request = Auth.setDeleteContactHeaders("osLead", id);
-		        response = client.execute(request);
-		        
-			}while(response.getStatusLine().getStatusCode() != 404 || response.getStatusLine().getStatusCode() != 400);
+			LeadOSC lead = GetMethods.getOSLeadByPrimaryContactEmailAddress(email);
+			CloseableHttpClient client = HttpClientBuilder.create().build();
+			//Asigno el leadId a ContactPartyNumber de leadOSC
+			HttpDelete request = Auth.setDeleteContactHeaders("osLead", lead.getContactPartyNumber());
+		    
+			client.execute(request);
+			
+		    client.close();
 			
 			return true;
 			
@@ -72,7 +67,7 @@ public class ServiceOS{
 		}
 	}
 	
-	public boolean createOSContact(String json, String email) {
+	private boolean createOSContact(String json, String email) {
 		try {
 			Contact contacto = GetMethods.getOSContactByEmail(email);
 			if(contacto.getId() != 0L)

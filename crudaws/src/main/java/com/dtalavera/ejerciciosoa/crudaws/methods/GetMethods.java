@@ -2,8 +2,8 @@ package com.dtalavera.ejerciciosoa.crudaws.methods;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -25,7 +25,6 @@ public class GetMethods {
 			    contacto = setContact(contacto, jsonArray.getJSONObject(0).getString("id"), name[0], name[1], email);
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
 		}
 		
 		return contacto;
@@ -34,16 +33,17 @@ public class GetMethods {
 	public static Contact getRNContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
-			System.out.println("getRNContactByEmail " + email);
-			HttpClient client = HttpClientBuilder.create().build();
+			CloseableHttpClient client = HttpClientBuilder.create().build();
 	        HttpGet request = Auth.setGetContactHeaders("rn", ReplaceChars.transFormarLetras(email));
 	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
 	        contacto = GetMethods.getRNContactByJson(json, email);
+	        
+	        client.close();
+	        
 		} catch(Exception e) {
-        	e.printStackTrace();
         }
         return contacto;
 	}
@@ -64,13 +64,16 @@ public class GetMethods {
 	public static Contact getOSContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
-			HttpClient client = HttpClientBuilder.create().build();
+			CloseableHttpClient client = HttpClientBuilder.create().build();
 	        HttpGet request = Auth.setGetContactHeaders("os", ReplaceChars.transFormarLetras(email));
 	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
 	        contacto = GetMethods.getOSContactByJson(json);
+	        
+	        client.close();
+	        
 		} catch(Exception e) {
         }
 		
@@ -86,7 +89,6 @@ public class GetMethods {
 			    contacto = setContact(contacto, jsonArray.getJSONObject(0).getString("id"), "", "", jsonArray.getJSONObject(0).getString("emailAddress"));
 			    
 			}catch(Exception e) {
-				e.printStackTrace();
 			}
 		}
 		
@@ -96,15 +98,17 @@ public class GetMethods {
 	public static Contact getElContactByEmail(String email) {
 		Contact contacto = new Contact();
 		try {
-			HttpClient client = HttpClientBuilder.create().build();
+			CloseableHttpClient client = HttpClientBuilder.create().build();
 	        HttpGet request = Auth.setGetContactHeaders("el", ReplaceChars.transFormarLetras(email));
 
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
 	        contacto = GetMethods.getElContactByJson(json);
+	        
+	        client.close();
+	        
 		} catch(Exception e) {
-        	e.printStackTrace();
         }
         return contacto;
 	}
@@ -117,8 +121,8 @@ public class GetMethods {
 	    return contacto;
 	}
 
-	private static LeadOSC setLead(LeadOSC lead, String id, String name) {
-		lead.setContactPartyNumber(Integer.parseInt(id));
+	private static LeadOSC setLead(LeadOSC lead, long id, String name) {
+		lead.setContactPartyNumber(id);
 		lead.setName(name);
 		return lead;
 	}
@@ -129,7 +133,7 @@ public class GetMethods {
 			JSONObject jsonObject = new JSONObject(json);
 		    JSONArray jsonArray = jsonObject.getJSONArray("items");
 			if(!(jsonArray.equals(""))) {
-				lead = setLead(lead, jsonArray.getJSONObject(0).getString("LeadId"), jsonArray.getJSONObject(0).getString("PrimaryContactPartyName"));
+				lead = setLead(lead, jsonArray.getJSONObject(0).getLong("LeadId"), jsonArray.getJSONObject(0).getString("PrimaryContactPartyName"));
 			}
 		}catch(Exception e) {
 		}
@@ -139,13 +143,16 @@ public class GetMethods {
 	public static LeadOSC getOSLeadByPrimaryContactEmailAddress(String email) {
 		LeadOSC lead = new LeadOSC();
 		try {
-			HttpClient client = HttpClientBuilder.create().build();
+			CloseableHttpClient client = HttpClientBuilder.create().build();
 	        HttpGet request = Auth.setGetContactHeaders("osLead", email);
 	        
 	        HttpResponse response = client.execute(request);
 	        HttpEntity entity = response.getEntity();
 	        String json = EntityUtils.toString(entity);
 	        lead = GetMethods.getOSLeadByJson(json);
+	        
+	        client.close();
+	        
 		} catch(Exception e) {
         }
         return lead;

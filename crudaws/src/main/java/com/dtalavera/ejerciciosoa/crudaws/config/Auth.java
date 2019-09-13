@@ -16,7 +16,6 @@ public class Auth {
 		switch(api) {
 		case "rn":
 			hp = new HttpPost(Config.getUrlRN() + "/services/rest/connect/v1.3/contacts");
-			System.out.println(json);
 			hp.setHeader(HttpHeaders.AUTHORIZATION, new String("Basic " + Base64.getEncoder().encodeToString((Config.getUsrRN() + ":" + Config.getPwdRN()).getBytes())));
 			break;
 		case "el":

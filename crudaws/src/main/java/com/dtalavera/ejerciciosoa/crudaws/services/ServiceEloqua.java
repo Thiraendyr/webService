@@ -42,7 +42,9 @@ public class ServiceEloqua{
 			
 			return "Eliminado con éxito..." + email;
 			
-		}catch(Exception e) {e.printStackTrace();return "ERROR: No se ha podido eliminar";}
+		}catch(Exception e) {
+			return "ERROR: No se ha podido eliminar";
+		}
 	}
 	
 	public String createElContact(String json, String email) {
@@ -62,7 +64,8 @@ public class ServiceEloqua{
 		    client.close();
 		    
 		    return "Creado con éxito";
-		}catch(Exception e) {e.printStackTrace();return "ERROR: No se ha podido crear";}
+		} catch(Exception e) {
+			return "ERROR: No se ha podido crear";}
 	}
 	
 	public String serializarObjecto(String jsonSend){
@@ -75,9 +78,10 @@ public class ServiceEloqua{
 			contactEl.setLastName(ReplaceChars.transFormarLetras(jsonObject.getString("lastName")));
 			contactEl.setEmailAddress(ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
 				
-			return createElContact(new ObjectMapper().writeValueAsString(contactEl), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
-		}catch(Exception e) {
-			e.printStackTrace();
+			String response = createElContact(new ObjectMapper().writeValueAsString(contactEl), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
+			
+			return response;
+		} catch(Exception e) {
 			return "ERROR: No se ha podido crear";
 		}
 	}

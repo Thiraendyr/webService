@@ -29,7 +29,6 @@ public class ServiceRN{
 	
 	public String deleteRNContact(String email) {
 		try {
-			System.out.println("deleteRNContact " + email);
 			Contact contacto = GetMethods.getRNContactByEmail(email);
 			if(contacto.getId() == 0L)
 				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
@@ -43,7 +42,9 @@ public class ServiceRN{
 			
 			return "Eliminado con éxito..." + email;
 			
-		}catch(Exception e) {e.printStackTrace();return "ERROR: No se ha podido eliminar";}
+		}catch(Exception e) {
+			return "ERROR: No se ha podido eliminar";
+		}
 	}
 	
 	public String createRNContact(String json, String email) {
@@ -57,14 +58,12 @@ public class ServiceRN{
 		    
 			HttpResponse response = client.execute(httpPost);
 			if(response.getStatusLine().getStatusCode() != 201) {
-				System.out.println(httpPost.getEntity().getContent());
 				return "ERROR: El email contiene caracteres raros";
 			}
 		    client.close();
 		    
 		    return "Creado con éxito";
 		}catch(Exception e) {
-			e.printStackTrace();
 			return "ERROR: No se ha podido crear";
 		}
 	}
@@ -82,7 +81,6 @@ public class ServiceRN{
 			
 			return response;
 		}catch(Exception e) {
-			e.printStackTrace();
 			return "ERROR: No se ha podido crear";
 		}
 	}
