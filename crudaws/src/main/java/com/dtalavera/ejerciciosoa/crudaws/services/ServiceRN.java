@@ -55,7 +55,7 @@ public class ServiceRN{
 		try {
 			Contact contacto = GetMethods.getRNContactByEmail(email);
 			if(contacto.getId() != 0L)
-				return "Ese contacto ya existe";
+				return "Ya existe un contacto con ese email...";
 			
 			CloseableHttpClient client = HttpClients.createDefault();
 			HttpPost httpPost  = Auth.setPostContactHeaders("rn", json);
