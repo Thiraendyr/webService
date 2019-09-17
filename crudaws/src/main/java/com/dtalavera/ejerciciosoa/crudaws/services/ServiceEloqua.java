@@ -25,9 +25,10 @@ public class ServiceEloqua{
 //////////////////////////////////////Eloqua	
 	
 	//Devuelve el Contact recibiendo el email
+	/*
 	public Contact getContact(String email) {
 		return GetMethods.getElContactByEmail(ReplaceChars.transFormarLetras(email));
-	}
+	}*/
 	
 	//Elimina un Contact recibiendo un email
 	public String deleteElContact(String email) {

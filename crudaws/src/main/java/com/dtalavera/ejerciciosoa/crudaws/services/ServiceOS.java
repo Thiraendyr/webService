@@ -1,10 +1,14 @@
 package com.dtalavera.ejerciciosoa.crudaws.services;
 
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import com.dtalavera.ejerciciosoa.crudaws.config.Auth;
@@ -13,10 +17,11 @@ import com.dtalavera.ejerciciosoa.crudaws.methods.GetMethods;
 import com.dtalavera.ejerciciosoa.crudaws.methods.ReplaceChars;
 import com.dtalavera.ejerciciosoa.crudaws.models.OSC.ContactOSC;
 import com.dtalavera.ejerciciosoa.crudaws.models.OSC.LeadOSC;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @org.springframework.stereotype.Service
-public class ServiceOS{
+public class ServiceOS {
 	
 	public ServiceOS() {
 		// TODO Auto-generated constructor stub
@@ -25,29 +30,35 @@ public class ServiceOS{
 //////////////////////////////////////Oracle Sales Cloud
 	//Busca un Contact por email
 	public Contact getContact(String email) {
-		return GetMethods.getOSContactByEmail(ReplaceChars.transFormarLetras(email));
+		try {
+			return GetMethods.getOSContactByEmail(ReplaceChars.transFormarLetras(email));
+			
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 	
 	//Elimina un Contact por email
-	public String deleteOSContact(String email) {
+	public void deleteOSContact(String email) {
 		try {
 			Contact contacto = GetMethods.getOSContactByEmail(email);
-			if(contacto.getId() == 0L)
-				return "ERROR: El contacto de email: " + email + " no existe...no se puede eliminar";
+			if(contacto.getId() != 0L) {
 			
-			CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-			HttpDelete httpDelete  = Auth.setDeleteContactHeaders("os", contacto.getId());
+				CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+				HttpDelete httpDelete  = Auth.setDeleteContactHeaders("os", contacto.getId());
+				
+				httpclient.execute(httpDelete);
+				
+				deleteOSLeadsByEmail(email);
+	
+				httpclient.close();
 			
-			httpclient.execute(httpDelete);
-			
-			deleteOSLeadsByEmail(email);
-
-			httpclient.close();
-			
-			return "Eliminado con éxito..." + email + " y su lead " + contacto.getFirstName() + contacto.getLastName() + "_Lead";
-			
-		}catch(Exception e) {
-			return "ERROR: No se ha podido eliminar";
+			}
+		
+		} catch(IOException | JSONException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -65,90 +76,97 @@ public class ServiceOS{
 			
 			return true;
 			
-		}catch(Exception e) {
+		} catch(IOException | JSONException e) {
 			return false;
 		}
 	}
 	
 	//Hace post del contacto desde el ContactOSC recibido por json
-	private String createOSContact(String json, String email) {
+	private Contact createOSContact(String json, String email) {
 		try {
 			Contact contacto = GetMethods.getOSContactByEmail(email);
-			if(contacto.getId() != 0L)
-				return "Ya existe un contacto con ese email...";
+			if(contacto.getId() == 0L){
 			
-			CloseableHttpClient client = HttpClients.createDefault();
-			HttpPost httpPost  = Auth.setPostContactHeaders("os", json);
-			
-			client.execute(httpPost);
-			
-		    client.close();
-		    
-		    return "Se ha creado con éxito el nuevo contacto";
-		}catch(Exception e) {
-			return "ERROR: No se ha podido crear el contacto";
+				CloseableHttpClient client = HttpClients.createDefault();
+				HttpPost httpPost  = Auth.setPostContactHeaders("os", json);
+				
+				HttpResponse response = client.execute(httpPost);
+				
+				if(response.getStatusLine().getStatusCode() == 201) {
+				    client.close();
+					return GetMethods.getRNContactByEmail(email);
+				}
+			    
+			}
+		} catch(IOException | JSONException e) {
+			e.printStackTrace();
 		}
+		
+		return null;
 	}
 	
 	//Realiza un post desde el json del LeadOSC
-	private String createOSLead(String json, String email) {
+	private LeadOSC createOSLead(String json, String email) {
 		try {
 			LeadOSC lead = GetMethods.getOSLeadByPrimaryContactEmailAddress(email);
-			if(lead.getContactPartyNumber() != 0L)
-				return " ya existe un lead asociado a ese email...";
+			if(lead.getContactPartyNumber() == 0L){
 			
-			CloseableHttpClient client = HttpClients.createDefault();
-			HttpPost httpPost  = Auth.setPostContactHeaders("osLead", json);
-			
-			client.execute(httpPost);
-		    
-		    client.close();
-		    
-		    return " se ha creado un lead asociado a ese contacto";
-		}catch(Exception e) {
-			return "ERROR: no se ha podido crear el lead";
+				CloseableHttpClient client = HttpClients.createDefault();
+				HttpPost httpPost  = Auth.setPostContactHeaders("osLead", json);
+				
+				HttpResponse response = client.execute(httpPost);
+			    
+				if(response.getStatusLine().getStatusCode() == 201) {
+					client.close();
+					return GetMethods.getOSLeadByPrimaryContactEmailAddress(email);
+				}
+			}
+		} catch(IOException | JSONException e) {
+			e.printStackTrace();
 		}
+		
+		return null;
 	}
 	
 	//Serializa un json a ContactOSC y crea el contacto
-	public String serializarObjectoContact(String jsonSend){
+	public Contact serializarObjectoContact(String jsonReceived){
 		try {
-			JSONObject jsonObject = new JSONObject(jsonSend);
+			JSONObject jsonObject = new JSONObject(jsonReceived);
 			
 			ContactOSC contactOs = new ContactOSC();
 			contactOs.setPartyNumber(null);
-			contactOs.setFirstName(ReplaceChars.transFormarLetras(jsonObject.getString("firstName")));
-			contactOs.setLastName(ReplaceChars.transFormarLetras(jsonObject.getString("lastName")));
-			contactOs.setEmailAddress(ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
+			contactOs.setFirstName(jsonObject.getString("firstName"));
+			contactOs.setLastName(jsonObject.getString("lastName"));
+			contactOs.setEmailAddress(jsonObject.getString("emailAddress"));
 			
-			String responseContacto = createOSContact(new ObjectMapper().writeValueAsString(contactOs), ReplaceChars.transFormarLetras(jsonObject.getString("emailAddress")));
+			createOSContact(new ObjectMapper().writeValueAsString(contactOs), jsonObject.getString("emailAddress"));
 			
-			Contact c = GetMethods.getOSContactByEmail(contactOs.getEmailAddress());
-			String responseLead = serializarObjectoLead(c, c.getEmail());
+			Contact contact = GetMethods.getOSContactByEmail(contactOs.getEmailAddress());
+			serializarObjectoLead(contact, contact.getEmail());
 			
-			return responseContacto + responseLead;
-		
-			//return "No se admiten correos repetidos";
+			return contact;	
 			
-			
-		}catch(Exception e) {
-			return "ERROR: No se ha podido crear";
+		} catch(IOException | JSONException e) {
+			e.printStackTrace();
 		}
+		
+		return null;
 	}
 	
 	//Serializa un json a LeadOSC y crea el Lead
-	public String serializarObjectoLead(Contact contact, String email){
+	private LeadOSC serializarObjectoLead(Contact contact, String email) {
 		try {
 			LeadOSC leadOS = new LeadOSC();
 			leadOS.setName(contact.getFirstName() + contact.getLastName() + "_Lead");
 			leadOS.setContactPartyNumber(contact.getId());
 			
-			String response = createOSLead(new ObjectMapper().writeValueAsString(leadOS), email);
+			return createOSLead(new ObjectMapper().writeValueAsString(leadOS), email);
 			
-			return response;
-		}catch(Exception e) {
-			return "ERROR: No se ha podido crear el lead";
+		} catch(JsonProcessingException e) {
+			e.printStackTrace();
 		}
+		
+		return null;
 	}
 
 }

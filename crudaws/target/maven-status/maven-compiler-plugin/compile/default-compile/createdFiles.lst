@@ -1,6 +1,7 @@
 com\dtalavera\ejerciciosoa\crudaws\models\El\ContactEl.class
 com\dtalavera\ejerciciosoa\crudaws\services\ServiceRN.class
 com\dtalavera\ejerciciosoa\crudaws\models\OSC\ContactOSC.class
+com\dtalavera\ejerciciosoa\crudaws\methods\GetMethods$1.class
 com\dtalavera\ejerciciosoa\crudaws\methods\GetMethods.class
 com\dtalavera\ejerciciosoa\crudaws\models\RN\AddressType.class
 com\dtalavera\ejerciciosoa\crudaws\services\ServiceEloqua.class
@@ -15,4 +16,5 @@ com\dtalavera\ejerciciosoa\crudaws\config\Config.class
 com\dtalavera\ejerciciosoa\crudaws\controller\Endpoints.class
 com\dtalavera\ejerciciosoa\crudaws\models\RN\Emails.class
 com\dtalavera\ejerciciosoa\crudaws\services\ServiceOS.class
+com\dtalavera\ejerciciosoa\crudaws\methods\GetMethods$2.class
 com\dtalavera\ejerciciosoa\crudaws\models\RN\Name.class

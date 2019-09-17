@@ -86,4 +86,8 @@ public class Auth {
 		hg.addHeader("accept", "application/json");
 	    return hg;
 	}
+	
+	private static void setAuthorizationHeader(String user, String password) {
+		
+	}
 }
